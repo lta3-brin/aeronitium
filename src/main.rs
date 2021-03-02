@@ -7,5 +7,9 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    firmware::get_version().await
+    let message = firmware::command().await?;
+
+    println!("{:?}", message);
+
+    Ok(())
 }
