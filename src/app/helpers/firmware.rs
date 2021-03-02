@@ -1,19 +1,27 @@
+use std::convert::TryInto;
 use tokio::net::TcpStream;
 use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use crate::app::AppError;
-use crate::app::decoders::response_code;
+use crate::app::models::SimpleMessage;
+use crate::app::decoders::{response_code, response_type};
 
-pub async fn get_version() -> Result<(), AppError> {
+pub async fn command() -> Result<SimpleMessage<f32>, AppError> {
     let mut stream = TcpStream::connect("192.168.129.119:8400").await?;
     let command = b"LA4 111;";
     stream.write_all(command).await?;
 
     let mut buffer = [0; 8];
     stream.read(&mut buffer).await?;
+    let resp = &buffer;
+    let bytes: [u8; 4] = resp[4..].try_into()?;
 
-    let resp = response_code::get(buffer[0]);
+    let message = SimpleMessage::<f32>::new(
+        resp[0],
+        response_code::get(resp[0]),
+        resp[1],
+        response_type::get(resp[1]),
+        f32::from_be_bytes(bytes)
+    );
 
-    println!("The firmware of the DTC Initium: {:?}", resp);
-
-    Ok(())
+    Ok(message)
 }
