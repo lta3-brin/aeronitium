@@ -1,9 +1,5 @@
 use std::io;
-
-#[derive(Debug)]
-pub enum AppError {
-    TokioIoError(io::Error)
-}
+use crate::app::AppError;
 
 impl From<io::Error> for AppError {
     fn from(err: io::Error) -> Self {
