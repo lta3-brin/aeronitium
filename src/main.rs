@@ -1,13 +1,14 @@
 use crate::app::AppError;
-use crate::app::helpers::firmware;
+use crate::app::helpers::calzero;
 
 mod app;
+
 
 #[tokio::main]
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    let message = firmware::command().await?;
+    let message = calzero::command().await?;
 
     println!("{:?}", message);
 
