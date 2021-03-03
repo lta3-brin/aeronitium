@@ -1,5 +1,5 @@
 use crate::app::AppError;
-use crate::app::helpers::calzero;
+use crate::app::helpers::chgunit;
 
 mod app;
 
@@ -8,9 +8,7 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    let message = calzero::command().await?;
-
-    println!("{:?}", message);
+    chgunit::command().await?;
 
     Ok(())
 }

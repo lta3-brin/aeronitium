@@ -4,8 +4,9 @@ use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use crate::app::AppError;
 use crate::app::models::SimpleMessage;
 use crate::app::decoders::{response_code, response_type};
-// use crate::app::decoders::{response_code, response_type};
 
+
+#[allow(dead_code)]
 pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     let mut stream = TcpStream::connect("192.168.129.119:8400").await?;
     let command = b"CA2;";
