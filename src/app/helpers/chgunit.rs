@@ -1,17 +1,20 @@
 use tokio::net::TcpStream;
 use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use crate::app::AppError;
+use crate::app::models::SimpleMessage;
+use crate::app::helpers::display;
 
 
-pub async fn command() -> Result<(), AppError> {
+#[allow(dead_code)]
+pub async fn command(satuan: u8) -> Result<SimpleMessage<i32>, AppError> {
     let mut stream = TcpStream::connect("192.168.129.119:8400").await?;
-    let command = b"PC4 1 3;";  // Ubah ke satuan Pa.
-    stream.write_all(command).await?;
-
+    let cmd = format!("PC4 1 {};", satuan);
     let mut buffer = [0; 8];
+
+    stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
 
-    println!("{:?}", buffer);
+    let message = display::display_message::<i32>(buffer)?;
 
-    Ok(())
+    Ok(message)
 }
