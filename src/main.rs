@@ -1,5 +1,5 @@
 use crate::app::AppError;
-use crate::app::helpers::chgunit;
+use crate::app::helpers::stopstream;
 
 mod app;
 
@@ -8,8 +8,7 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    //Konversi satuan tekanan ke Pa (3)
-    let resp = chgunit::command(3).await?;
+    let resp = stopstream::command().await?;
 
     println!("{:?}", resp);
 
