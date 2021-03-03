@@ -8,7 +8,10 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    chgunit::command().await?;
+    //Konversi satuan tekanan ke Pa (3)
+    let resp = chgunit::command(3).await?;
+
+    println!("{:?}", resp);
 
     Ok(())
 }
