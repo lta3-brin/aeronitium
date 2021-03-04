@@ -1,5 +1,5 @@
 use crate::app::AppError;
-use crate::app::helpers::chgunit;
+use crate::app::helpers::simplesetup;
 
 mod app;
 
@@ -8,7 +8,9 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    chgunit::command().await?;
+    let resp = simplesetup::command().await?;
+
+    println!("{:?}", resp);
 
     Ok(())
 }

@@ -6,12 +6,12 @@ use crate::app::helpers::display;
 
 
 #[allow(dead_code)]
-pub async fn command() -> Result<SimpleMessage<String>, AppError> {
+pub async fn command(setup_table: u8) -> Result<SimpleMessage<String>, AppError> {
     let mut stream = TcpStream::connect("192.168.129.119:8400").await?;
-    let command = b"CA2;";
+    let cmd = format!("AD2 {};", setup_table);
     let mut buffer = [0; 8];
 
-    stream.write_all(command).await?;
+    stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
 
     let message = display::display_message::<String>(buffer)?;
