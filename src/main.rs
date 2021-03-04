@@ -1,5 +1,5 @@
 use crate::app::AppError;
-use crate::app::helpers::stopstream;
+use crate::app::helpers::simplesetup;
 
 mod app;
 
@@ -8,7 +8,7 @@ mod app;
 async fn main() -> Result<(), AppError> {
     println!("Connecting to Initium");
 
-    let resp = stopstream::command().await?;
+    let resp = simplesetup::command().await?;
 
     println!("{:?}", resp);
 
