@@ -25,4 +25,10 @@ impl<U> SimpleMessage<U> {
             data
         }
     }
+
+    #[allow(dead_code)]
+    pub fn get_data(&self) -> U
+        where U: Copy {
+        self.data
+    }
 }
