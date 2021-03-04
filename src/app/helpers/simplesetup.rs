@@ -6,7 +6,7 @@ use crate::app::helpers::display;
 
 
 #[allow(dead_code)]
-pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
+pub async fn command() -> Result<SimpleMessage<String>, AppError> {
     let mut buffer = [0; 8];
     let mut stream = TcpStream::connect("192.168.129.119:8400").await?;
 
@@ -36,8 +36,7 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     let cmd = format!("SD1 {} ({}, {}, {});", CRS, SCN_ADDRESS, NUM_CHANNELS, LRN);
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
+    // let message = display::display_message::<String>(buffer)?;
 
     // define data acquisition parameters for filtered table
     // let cmd = format!(
@@ -47,7 +46,6 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     // stream.write_all(cmd.as_bytes()).await?;
     // stream.read(&mut buffer).await?;
     // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
 
     // define data acquisition parameters for rapid scanning table
     let cmd = format!(
@@ -56,8 +54,7 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     );
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
+    // let message = display::display_message::<String>(buffer)?;
 
     // define scan list for filtered table
     // let cmd = format!(
@@ -66,7 +63,6 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     // stream.write_all(cmd.as_bytes()).await?;
     // stream.read(&mut buffer).await?;
     // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
 
     // define scan list for rapid scanning
     let cmd = format!(
@@ -74,8 +70,7 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     );
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
+    // let message = display::display_message::<String>(buffer)?;
 
     // load and store DTC scanners EEPROM coefficients
     let cmd = format!(
@@ -83,40 +78,38 @@ pub async fn command() -> Result<SimpleMessage<i32>, AppError> {
     );
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
+    // let message = display::display_message::<String>(buffer)?;
 
     // sets the engineering units
     let cmd = format!("PC4 {} {};", LRN, UNX);
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
-    // println!("{:?}", message);
+    // let message = display::display_message::<String>(buffer)?;
 
     // check firmware
     let cmd = format!("LA4 {};", CRS);
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<f32>(buffer)?;
+    // let message = display::display_message::<String>(buffer)?;
 
     // look at scanner status
     let cmd = format!("LA1 {} -{}97;", CRS, SCN_ADDRESS);
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    // let message = display::display_message::<f32>(buffer)?;
+    // let message = display::display_message::<String>(buffer)?;
 
     // prints the group 0 coefficients
     let cmd = format!("OP2 {} -{} {};", CRS, STBL_2, SPORT);
     stream.write_all(cmd.as_bytes()).await?;
     stream.read(&mut buffer).await?;
-    println!("{:?}", buffer);
-    let message = display::display_message::<i32>(buffer)?;
+    let message = display::display_message::<String>(buffer)?;
 
     // test acquisition
     // let cmd = format!("AD2 {};", STBL_2);
     // stream.write_all(cmd.as_bytes()).await?;
     // stream.read(&mut buffer).await?;
-    // let message = display::display_message::<i32>(buffer)?;
+    // println!("{:?}", buffer);
+    // let message = display::display_message::<String>(buffer)?;
 
     Ok(message)
 }
