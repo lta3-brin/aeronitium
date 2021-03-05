@@ -6,3 +6,4 @@ pub mod startstream;
 pub mod simplesetup;
 pub mod initialization;
 pub mod output;
+pub mod startarray;
