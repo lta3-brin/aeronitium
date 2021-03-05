@@ -8,6 +8,16 @@ pub trait ResponseData {
     fn display_data(data: [u8; 4], code: u8, kind: u8) -> Self;
 }
 
+impl ResponseData for [u8; 2] {
+    fn display_data(data: [u8; 4], _code: u8, kind: u8) -> Self {
+        if kind == 33 {
+            [data[1], data[3]]
+        } else {
+            [0, 0]
+        }
+    }
+}
+
 impl ResponseData for String {
     fn display_data(data: [u8; 4], code: u8, kind: u8) -> Self {
         if kind == 4 {
@@ -34,8 +44,7 @@ impl ResponseData for String {
         } else if kind == 9 {
             format!("v{}", f32::from_be_bytes(data))
         } else if kind == 33 {
-            println!("{:?}", data);
-            format!("v{}", 33)
+            format!("Baris: {} dan Kolom: {}", data[1], data[3])
         } else if kind == 128 {
             let err = i32::from_be_bytes(data);
 
