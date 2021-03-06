@@ -4,8 +4,7 @@ use crate::app::helpers::{
     initialization,
     liveaction,
     output,
-    startarray,
-    calzero
+    startarray
 };
 
 
