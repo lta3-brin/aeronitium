@@ -4,7 +4,7 @@ use crate::app::helpers::{
     initialization,
     liveaction,
     output,
-    startarray
+    stream
 };
 
 
@@ -132,7 +132,7 @@ pub async fn command() -> Result<(), AppError> {
     println!("{:?}", m);
 
     // prints the group 0 coefficients
-    let n = output::tabel_coef(
+    output::tabel_coef(
         &mut stream,
         buffer,
         CRS,
@@ -140,14 +140,10 @@ pub async fn command() -> Result<(), AppError> {
         SPORT
     ).await?;
 
-    startarray::build(&mut stream, n).await?;
+    stream::daq(&mut stream, STBL_2).await?;
 
-    // test acquisition
-    // let cmd = format!("AD2 {};", STBL_2);
-    // stream.write_all(cmd.as_bytes()).await?;
-    // stream.read(&mut buffer).await?;
-    // println!("{:?}", buffer);
-    // let message = display::display_message::<String>(buffer)?;
+    // let p = stream::stop(&mut stream, buffer).await?;
+    // println!("{:?}", p);
 
     Ok(())
 }
