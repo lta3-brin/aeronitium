@@ -43,6 +43,8 @@ impl ResponseData for String {
             format!("{} - {} - {}", b, r, s)
         } else if kind == 9 {
             format!("v{}", f32::from_be_bytes(data))
+        } else if kind == 19 {
+            String::from("Ok")
         } else if kind == 33 {
             format!("Baris: {} dan Kolom: {}", data[1], data[3])
         } else if kind == 128 {
