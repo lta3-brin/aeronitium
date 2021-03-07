@@ -4,7 +4,8 @@ use crate::app::helpers::{
     initialization,
     liveaction,
     output,
-    stream
+    stream,
+    // calzero
 };
 
 
@@ -140,10 +141,9 @@ pub async fn command() -> Result<(), AppError> {
         SPORT
     ).await?;
 
+    // let x = calzero::command(&mut stream, buffer).await?;
+    // println!("{:?}", x);
     stream::daq(&mut stream, STBL_2).await?;
-
-    // let p = stream::stop(&mut stream, buffer).await?;
-    // println!("{:?}", p);
 
     Ok(())
 }
