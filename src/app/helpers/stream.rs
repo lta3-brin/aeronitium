@@ -1,53 +1,92 @@
-use tokio::net::TcpStream;
+use std::sync::{Arc};
+use tokio::{
+    spawn,
+    net::TcpStream,
+    sync::{Mutex, mpsc},
+    io::{AsyncWriteExt, AsyncReadExt}
+};
 use crate::app::models::SimpleMessage;
 use crate::app::AppError;
-use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use crate::app::helpers::display;
+use tokio::sync::mpsc::Sender;
 
 
 pub async fn daq(
-    stream: &mut TcpStream,
+    stream: Arc<Mutex<TcpStream>>,
     stbl: u8
+) -> Result<(), AppError> {
+    let (tx, mut rx) = mpsc::channel(32);
+    let stream = Arc::clone(&stream);
+
+    // Sending task to thread
+    spawn(async move {
+        get_data(stream, stbl, tx).await.unwrap();
+    });
+
+    while let Some(sensor) = rx.recv().await {
+        println!("{}", sensor);
+    }
+
+    Ok(())
+}
+
+async fn get_data(
+    stream: Arc<Mutex<TcpStream>>,
+    stbl: u8,
+    transmit: Sender<String>
 ) -> Result<(), AppError> {
     let mut buff4 = [0u8; 4];
     let mut buff8 = [0u8; 8];
     let mut buff16 = [0u8; 16];
 
+    let mut stream_lock = stream.lock().await;
+    let mut stream = &mut *stream_lock;
+
     let cmd = format!("AD2 {};", stbl);
     stream.write_all(cmd.as_bytes()).await?;
 
     let mut response_type = 0u8;
-    let mut step = 0i32;
-    let mut id = 0i32;
+    let mut step = 0u8;
+    let mut id = 0u8;
     let mut sensor: Vec<f32> = vec![];
-    for i in 0..264i32 {
+    for i in 0..198 {
         if i == 0 || i % (step + 2) == 0 {
             stream.read(&mut buff8).await?;
             response_type = buff8[1];
-            step = buff8[7] as i32;
+            step = buff8[7];
             sensor = vec![];
         } else if i % (step + 2) == 1 {
             stream.read(&mut buff16).await?;
-            id = buff16[15] as i32;
+            id = buff16[15];
             sensor = vec![];
         } else {
             if response_type == 19 {
                 stream.read(&mut buff4).await?;
                 sensor.push(f32::from_be_bytes(buff4));
             } else {
-                let m = stop(stream, buff8).await?;
+                let m = stop(&mut stream, buff8).await?;
                 println!("resp: {:?}", m)
             }
         }
 
         if sensor.len() == step as usize {
-            println!("{} {:?}", id, sensor);
+            let mut coll = vec![];
+            coll.push(id.to_string());
+
+            for sen in &sensor {
+                coll.push(sen.to_string())
+            }
+
+            let dt = coll.join(", ");
+
+            transmit.send(dt).await.unwrap();
         }
 
-        if i == 264 {
-            let m = stop(stream, buff8).await?;
+        if i == 197 {
+            let m = stop(&mut stream, buff8).await?;
             println!("finish: {:?}", m);
         }
+
     }
 
     Ok(())
