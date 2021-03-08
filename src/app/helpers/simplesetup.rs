@@ -1,4 +1,4 @@
-use tokio::net::TcpStream;
+use tokio::{net::TcpStream, sync::Mutex};
 use crate::app::AppError;
 use crate::app::helpers::{
     initialization,
@@ -7,6 +7,7 @@ use crate::app::helpers::{
     stream,
     // calzero
 };
+use std::sync::{Arc};
 
 
 #[allow(dead_code)]
@@ -143,7 +144,8 @@ pub async fn command() -> Result<(), AppError> {
 
     // let x = calzero::command(&mut stream, buffer).await?;
     // println!("{:?}", x);
-    stream::daq(&mut stream, STBL_2).await?;
+    let stream = Arc::new(Mutex::new(stream));
+    stream::daq(stream, STBL_2).await?;
 
     Ok(())
 }
