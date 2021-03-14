@@ -1,16 +1,23 @@
-use crate::app::AppError;
-use crate::app::helpers::simplesetup;
-
 mod app;
+mod dtc;
+
+use std::env;
+use actix_web::{App, HttpServer};
+use crate::app::AppError;
+use crate::app::routers::app_routers;
+use crate::app::middlewares::normalize_path;
 
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<(), AppError> {
-    println!("Connecting to Initium");
+    let addr = env::var("APP_ADDRESS")?;
 
-    let resp = simplesetup::command().await?;
+    let server = HttpServer::new(|| {
+        App::new().wrap(normalize_path()).configure(app_routers)
+    }).bind(addr.clone())?;
 
-    println!("{:?}", resp);
+    println!("Running aeronitium on {}...", addr);
+    let run = server.run().await?;
 
-    Ok(())
+    Ok(run)
 }
