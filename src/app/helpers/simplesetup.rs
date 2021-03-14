@@ -119,7 +119,7 @@ pub async fn command() -> Result<(), AppError> {
     ).await?;
 
     let stream = Arc::new(Mutex::new(stream));
-    stream::daq(stream, STBL_2).await;
+    stream::daq(stream, STBL).await;
 
     Ok(())
 }
