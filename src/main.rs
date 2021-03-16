@@ -1,23 +1,26 @@
 mod app;
-mod dtc;
 
-use std::env;
-use actix_web::{App, HttpServer};
+use cursive::theme::{PaletteColor, Color, BorderStyle};
 use crate::app::AppError;
-use crate::app::routers::app_routers;
-use crate::app::middlewares::normalize_path;
+use crate::app::layouts::default::build_terminal;
 
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> Result<(), AppError> {
-    let addr = env::var("APP_ADDRESS")?;
+    let mut siv = cursive::default();
 
-    let server = HttpServer::new(|| {
-        App::new().wrap(normalize_path()).configure(app_routers)
-    }).bind(addr.clone())?;
+    let mut theme = siv.current_theme().clone();
+    theme.palette[PaletteColor::Background] = Color::TerminalDefault;
+    theme.palette[PaletteColor::View] = Color::TerminalDefault;
+    theme.palette[PaletteColor::Primary] = Color::Rgb(166, 126, 123);
+    theme.shadow = false;
+    theme.borders = BorderStyle::Simple;
 
-    println!("Running aeronitium on {}...", addr);
-    let run = server.run().await?;
+    siv.set_theme(theme);
 
-    Ok(run)
+    build_terminal(&mut siv)?;
+
+    siv.run();
+
+    Ok(())
 }
