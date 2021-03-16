@@ -8,9 +8,10 @@ pub mod errors;
 pub mod helpers;
 pub mod decoders;
 pub mod models;
-pub mod routers;
-pub mod handlers;
-pub mod middlewares;
+pub mod layouts;
+pub mod components;
+pub mod pages;
+
 
 #[derive(Debug)]
 pub enum AppError {
