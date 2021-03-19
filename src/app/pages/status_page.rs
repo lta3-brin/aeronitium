@@ -1,14 +1,12 @@
-use cursive::views::{Panel, TextView, ResizedView};
-use cursive::traits::Resizable;
-use cursive::align::Align;
+use cursive::views::{TextView, LinearLayout, NamedView};
+use crate::app::components::container::aeronitium_container;
 
 
-type StatusScannerPage = ResizedView<Panel<TextView>>;
-
-pub fn build_status_scaner() -> StatusScannerPage {
-    let widget = Panel::new(
-        TextView::new("Halaman Status Pemindai").align(Align::center())
-    ).full_screen();
+pub fn build_status_scaner() -> NamedView<LinearLayout> {
+    let widget = aeronitium_container(
+        TextView::new("Halaman Status Pemindai"),
+        |_| {}
+    );
 
     widget
 }
