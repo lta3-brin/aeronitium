@@ -31,6 +31,7 @@ pub fn build_firmware() -> NamedView<LinearLayout> {
             ];
 
             s.call_on_name("aeronitium_container", |view: &mut LinearLayout| {
+                view.remove_child(1);
                 view.add_child(add_info(messages))
             });
         }
