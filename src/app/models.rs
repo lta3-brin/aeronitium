@@ -29,6 +29,16 @@ impl<U> SimpleMessage<U> {
     #[allow(dead_code)]
     pub fn get_data(&self) -> U
         where U: Copy {
-        self.data
+        self.data.clone()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_code_message(&self) -> String {
+        self.code_message.clone()
+    }
+
+    #[allow(dead_code)]
+    pub fn get_kind_message(&self) -> String {
+        self.kind_message.clone()
     }
 }

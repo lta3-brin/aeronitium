@@ -1,5 +1,3 @@
-use std::fs::File;
-use csv::WriterBuilder;
 use tokio::net::TcpStream;
 use tokio::io::{AsyncWriteExt, AsyncReadExt};
 use crate::app::AppError;
@@ -14,7 +12,7 @@ pub async fn tabel_coef(
     crs: &str,
     stbl: u8,
     sport: &str
-) -> Result<(), AppError> {
+) -> Result<Vec<String>, AppError> {
     let cmd = format!("OP2 {} -{} {};", crs, stbl, sport);
 
     stream.write_all(cmd.as_bytes()).await?;
@@ -22,15 +20,16 @@ pub async fn tabel_coef(
 
     let array = display::display_message::<[u8; 2]>(buffer)?;
 
-    build(stream, array).await?;
+    let result = build(stream, array).await?;
 
-    Ok(())
+    Ok(result)
 }
 
 async fn build(
     stream: &mut TcpStream,
     arr: SimpleMessage<[u8; 2]>
-) -> Result<(), AppError> {
+) -> Result<Vec<String>, AppError> {
+    let mut data = Vec::<String>::new();
     let mut buff = [0u8; 4];
     let row: u8 = arr.get_data()[0];
     let col: u8 = arr.get_data()[1];
@@ -47,16 +46,11 @@ async fn build(
         }
     }
 
-    {
-        let file = File::create("calib_coeff.csv")?;
-        let mut writer = WriterBuilder::new()
-            .has_headers(false)
-            .from_writer(file);
+    for r in 0..row {
+        let dt = &array[r as usize][..];
 
-        for r in 0..row {
-            writer.write_record(&array[r as usize][..]).unwrap();
-        }
+        data.push(dt.join(","));
     }
 
-    Ok(())
+    Ok(data)
 }

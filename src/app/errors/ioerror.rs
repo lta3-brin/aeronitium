@@ -3,6 +3,6 @@ use crate::app::AppError;
 
 impl From<io::Error> for AppError {
     fn from(err: io::Error) -> Self {
-        Self::TokioIoError(err)
+        Self::TcpError(err)
     }
 }

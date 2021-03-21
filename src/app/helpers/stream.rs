@@ -27,7 +27,7 @@ pub async fn daq(stream: Arc<Mutex<TcpStream>>, stbl: u8) {
 async fn get_data(
     stream: Arc<Mutex<TcpStream>>,
     stbl: u8,
-    transmit: mpsc::Sender<String>
+    mut transmit: mpsc::Sender<String>
 ) {
     let mut buff4 = [0u8; 4];
     let mut buff8 = [0u8; 8];

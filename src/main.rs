@@ -1,26 +1,30 @@
 mod app;
 
-use cursive::theme::{PaletteColor, Color, BorderStyle};
+use tokio::sync::Mutex;
+use actix_web::rt::net::TcpStream;
+use actix_web::{App, HttpServer, web};
 use crate::app::AppError;
-use crate::app::layouts::default::build_terminal;
+use crate::app::configs::{get_configs, TcpConnection};
+use crate::app::helpers::display::display_banner;
+use crate::app::routers::app_routers;
 
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<(), AppError> {
-    let mut siv = cursive::default();
+    let conf = get_configs();
+    let tcp_conn = web::Data::new(TcpConnection {
+        conn: Mutex::new(
+            TcpStream::connect(conf.get_dtc_addr()).await?
+        )
+    });
 
-    let mut theme = siv.current_theme().clone();
-    theme.palette[PaletteColor::Background] = Color::TerminalDefault;
-    theme.palette[PaletteColor::View] = Color::TerminalDefault;
-    theme.palette[PaletteColor::Primary] = Color::Rgb(166, 126, 123);
-    theme.shadow = false;
-    theme.borders = BorderStyle::Simple;
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(tcp_conn.clone())
+            .configure(app_routers)
+    }).bind(conf.get_server_addr())?;
 
-    siv.set_theme(theme);
-
-    build_terminal(&mut siv)?;
-
-    siv.run();
-
-    Ok(())
+    println!("{}", display_banner());
+    println!("Starting on {}", conf.get_server_addr().clone());
+    Ok(server.run().await?)
 }
