@@ -10,7 +10,7 @@ pub async fn check(
     stream: &mut TcpStream,
     mut buffer: [u8; 8],
     crs: &str,
-    scnaddr: u8,
+    scnaddr: &str,
     numchan: u8,
     lrn: u8
 ) -> Result<SimpleMessage<String>, AppError> {
