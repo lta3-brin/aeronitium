@@ -22,7 +22,7 @@ impl error::ResponseError for AppError {
         );
 
         HttpResponseBuilder::new(self.status_code())
-            .set_header(header::CONTENT_TYPE, "application/jeson")
+            .set_header(header::CONTENT_TYPE, "application/json")
             .json(message)
     }
 }
