@@ -18,7 +18,7 @@ pub async fn command() -> Result<(), AppError> {
     // setup settings
     const CRS: &str        = "111";  // default CRS (111 - 118 are possible)
     const NUM_CHANNELS: u8 = 64;  //number of channels/port on the ESP. Allowed values include 32, 48, or 64
-    const SCN_ADDRESS: u8  = 1;  // scanner address (1-8)
+    const SCN_ADDRESS: &str  = "1";  // scanner address (1-8)
     const LRN: u8          = 1;  // logical range number
     const STBL: u8         = 2;  // single point scanner table
     const SPORT: &str      = "101-164";  // 64 ports on first scanner
@@ -105,7 +105,7 @@ pub async fn command() -> Result<(), AppError> {
         &mut stream,
         buffer,
         CRS,
-        SCN_ADDRESS
+        1
     ).await?;
     println!("{:?}", m);
 
