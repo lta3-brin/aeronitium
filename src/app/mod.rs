@@ -1,21 +1,22 @@
 use std::{
-    io,
-    env,
     array,
+    env,
+    io,
 };
+use derive_more::{Display, Error};
 
 pub mod errors;
 pub mod helpers;
 pub mod decoders;
 pub mod models;
-pub mod layouts;
-pub mod components;
-pub mod pages;
+pub mod configs;
+pub mod handlers;
+pub mod routers;
 
 
-#[derive(Debug)]
+#[derive(Debug, Display, Error)]
 pub enum AppError {
-    TokioIoError(io::Error),
+    TcpError(io::Error),
     TrySliceError(array::TryFromSliceError),
     EnvError(env::VarError)
 }
