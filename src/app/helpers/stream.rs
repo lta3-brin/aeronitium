@@ -1,8 +1,5 @@
-use std::sync::{Arc};
 use tokio::{
-    spawn,
     net::TcpStream,
-    sync::{Mutex, mpsc},
     io::{AsyncWriteExt, AsyncReadExt}
 };
 use crate::app::models::SimpleMessage;
@@ -10,31 +7,11 @@ use crate::app::AppError;
 use crate::app::helpers::display;
 
 
-pub async fn daq(stream: Arc<Mutex<TcpStream>>, stbl: u8) {
-    let (tx, mut rx) = mpsc::channel(32);
-    let stream = Arc::clone(&stream);
-
-    // Sending task to thread
-    spawn(async move {
-        get_data(stream, stbl, tx).await;
-    });
-
-    while let Some(sensor) = rx.recv().await {
-        println!("{}", sensor);
-    }
-}
-
-async fn get_data(
-    stream: Arc<Mutex<TcpStream>>,
-    stbl: u8,
-    mut transmit: mpsc::Sender<String>
-) {
+#[allow(dead_code)]
+pub async fn start(stream: &mut TcpStream, stbl: u8) {
     let mut buff4 = [0u8; 4];
     let mut buff8 = [0u8; 8];
     let mut buff16 = [0u8; 16];
-
-    let mut stream_lock = stream.lock().await;
-    let mut stream = &mut *stream_lock;
 
     let cmd = format!("AD2 {};", stbl);
     stream.write_all(cmd.as_bytes()).await.unwrap();
@@ -60,7 +37,7 @@ async fn get_data(
                 stream.read(&mut buff4).await.unwrap();
                 sensor.push(f32::from_be_bytes(buff4));
             } else {
-                let m = stop(&mut stream, buff8).await.unwrap();
+                let m = stop(stream, buff8).await.unwrap();
                 println!("resp: {:?}", m)
             }
         }
@@ -75,7 +52,7 @@ async fn get_data(
 
             let dt = coll.join(", ");
 
-            transmit.send(dt).await.unwrap();
+            println!("{}", dt);
         }
 
         i += 1;
