@@ -1,12 +1,5 @@
 use std::env;
-use tokio::sync::Mutex;
-use actix_web::rt::net::TcpStream;
 
-
-#[derive(Debug)]
-pub struct TcpConnection {
-    pub conn: Mutex<TcpStream>
-}
 
 #[derive(Debug)]
 pub struct AppEnvironment {
