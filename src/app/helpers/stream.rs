@@ -2,13 +2,15 @@ use tokio::{
     net::TcpStream,
     io::{AsyncWriteExt, AsyncReadExt}
 };
+use tokio::sync::watch::Receiver;
 use crate::app::models::SimpleMessage;
 use crate::app::AppError;
 use crate::app::helpers::display;
+use crate::app::decoders::response_type::get;
 
 
 #[allow(dead_code)]
-pub async fn start(stream: &mut TcpStream, stbl: u8) {
+pub async fn start(stream: &mut TcpStream, stbl: u8, mut rx: Receiver<bool>) {
     let mut buff4 = [0u8; 4];
     let mut buff8 = [0u8; 8];
     let mut buff16 = [0u8; 16];
@@ -22,43 +24,52 @@ pub async fn start(stream: &mut TcpStream, stbl: u8) {
     let mut sensor: Vec<f32> = vec![];
 
     let mut i = 0u8;
-    loop {
-        if i == 0 || i % (step + 2) == 0 {
-            stream.read(&mut buff8).await.unwrap();
-            response_type = buff8[1];
-            step = buff8[7];
-            sensor = vec![];
-        } else if i % (step + 2) == 1 {
-            stream.read(&mut buff16).await.unwrap();
-            id = buff16[15];
-            sensor = vec![];
-        } else {
-            if response_type == 19 {
-                stream.read(&mut buff4).await.unwrap();
-                sensor.push(f32::from_be_bytes(buff4));
-            } else {
-                let m = stop(stream, buff8).await.unwrap();
-                println!("resp: {:?}", m)
+
+    while let Some(val) = rx.recv().await {
+        println!("while let some: {}", val);
+        if val {
+            loop {
+                if i == 0 || i % (step + 2) == 0 {
+                    stream.read(&mut buff8).await.unwrap();
+                    response_type = buff8[1];
+                    step = buff8[7];
+                    sensor = vec![];
+
+                    if response_type == 128 { println!("{}", get(response_type)) }
+                } else if i % (step + 2) == 1 {
+                    stream.read(&mut buff16).await.unwrap();
+                    id = buff16[15];
+                    sensor = vec![];
+                } else {
+                    if response_type == 19 {
+                        stream.read(&mut buff4).await.unwrap();
+                        sensor.push(f32::from_be_bytes(buff4));
+                    } else {
+                        let m = stop(stream, buff8).await.unwrap();
+                        println!("resp: {:?}", m)
+                    }
+                }
+
+                if sensor.len() == step as usize {
+                    let mut coll = vec![];
+                    coll.push(id.to_string());
+
+                    for sen in &sensor {
+                        coll.push(sen.to_string())
+                    }
+
+                    // let dt = coll.join(", ");
+                    // transmit.send(dt).await.unwrap();
+                    let mut wtr = csv::Writer::from_path("coba.csv").unwrap();
+                    wtr.write_record(&coll).unwrap();
+                }
+
+                i += 1;
+
+                if i == step + 2 {
+                    i = 0;
+                }
             }
-        }
-
-        if sensor.len() == step as usize {
-            let mut coll = vec![];
-            coll.push(id.to_string());
-
-            for sen in &sensor {
-                coll.push(sen.to_string())
-            }
-
-            let dt = coll.join(", ");
-
-            println!("{}", dt);
-        }
-
-        i += 1;
-
-        if i == step + 2 {
-            i = 0;
         }
     }
 }
