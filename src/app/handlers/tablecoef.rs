@@ -1,8 +1,9 @@
+use tokio::sync::Mutex;
 use serde::Deserialize;
+use actix_web::rt::net::TcpStream;
 use actix_web::{web, post, HttpResponse};
-use crate::app::configs::TcpConnection;
-use crate::app::helpers::output;
 use crate::app::AppError;
+use crate::app::helpers::output;
 use crate::app::models::SimpleMessage;
 
 
@@ -16,10 +17,10 @@ pub struct DtcTableCoef {
 #[post("/tablecoef")]
 pub async fn save_coef(
     payload: web::Json<DtcTableCoef>,
-    tcp: web::Data<TcpConnection>
+    tcp: web::Data<Mutex<TcpStream>>
 ) -> Result<HttpResponse, AppError> {
     let buffer = [0u8; 8];
-    let mut stream = tcp.conn.lock().await;
+    let mut stream = tcp.lock().await;
     let stream = &mut *stream;
 
     let o = output::tabel_coef(

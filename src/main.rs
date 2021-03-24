@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 use actix_web::rt::net::TcpStream;
 use actix_web::{App, HttpServer, web};
 use crate::app::AppError;
-use crate::app::configs::{get_configs, TcpConnection};
+use crate::app::configs::get_configs;
 use crate::app::helpers::display::display_banner;
 use crate::app::routers::app_routers;
 
@@ -12,11 +12,10 @@ use crate::app::routers::app_routers;
 #[actix_web::main]
 async fn main() -> Result<(), AppError> {
     let conf = get_configs();
-    let tcp_conn = web::Data::new(TcpConnection {
-        conn: Mutex::new(
-            TcpStream::connect(conf.get_dtc_addr()).await?
-        )
-    });
+
+    let tcp_conn = web::Data::new(Mutex::new(
+        TcpStream::connect(conf.get_dtc_addr()).await?
+    ));
 
     let server = HttpServer::new(move || {
         App::new()

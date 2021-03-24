@@ -3,34 +3,30 @@ use serde::Deserialize;
 use actix_web::rt::net::TcpStream;
 use actix_web::{web, post, HttpResponse};
 use crate::app::AppError;
-use crate::app::helpers::initialization;
+use crate::app::helpers::calzero;
+use crate::app::configs::get_configs;
 
 
 #[derive(Deserialize)]
-pub struct DtcConnScanner {
-    crs: String,
-    scn_address: String,
-    num_channels: u8,
+pub struct DtcRezero {
     lrn: u8
 }
 
-#[post("/connscanner")]
-pub async fn connected_scanners(
-    payload: web::Json<DtcConnScanner>,
+#[post("/rezero")]
+pub async fn calib_rezero(
+    payload: web::Json<DtcRezero>,
     tcp: web::Data<Mutex<TcpStream>>
 ) -> Result<HttpResponse, AppError> {
     let buffer = [0u8; 8];
     let mut stream = tcp.lock().await;
     let stream = &mut *stream;
 
-    let message = initialization::check(
-        stream,
-        buffer,
-        &payload.0.crs,
-        &payload.0.scn_address,
-        payload.0.num_channels,
-        payload.0.lrn
+    let message = calzero::command(
+        stream, buffer, payload.0.lrn
     ).await?;
+
+    let configs = get_configs();
+    *stream = TcpStream::connect(configs.get_dtc_addr()).await?;
 
     Ok(HttpResponse::Ok().json(message))
 }

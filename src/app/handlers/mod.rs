@@ -7,3 +7,6 @@ pub mod eeprom;
 pub mod changeunit;
 pub mod scannerstatus;
 pub mod tablecoef;
+pub mod rezero;
+pub mod startstream;
+pub mod simplesetup;

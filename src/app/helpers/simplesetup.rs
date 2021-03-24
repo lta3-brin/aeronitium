@@ -1,12 +1,9 @@
-use std::sync::{Arc};
-use tokio::{net::TcpStream, sync::Mutex};
+use tokio::net::TcpStream;
 use crate::app::AppError;
 use crate::app::helpers::{
     initialization,
     liveaction,
-    output,
-    stream,
-    // calzero
+    output
 };
 
 
@@ -117,9 +114,6 @@ pub async fn command() -> Result<(), AppError> {
         STBL,
         SPORT
     ).await?;
-
-    let stream = Arc::new(Mutex::new(stream));
-    stream::daq(stream, STBL).await;
 
     Ok(())
 }
