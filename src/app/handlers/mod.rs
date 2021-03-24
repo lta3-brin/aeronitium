@@ -9,3 +9,4 @@ pub mod scannerstatus;
 pub mod tablecoef;
 pub mod rezero;
 pub mod startstream;
+pub mod simplesetup;
