@@ -1,3 +1,5 @@
+use chrono::Local;
+use std::io::{stdout, Write};
 use tokio::{
     net::TcpStream,
     io::{AsyncWriteExt, AsyncReadExt}
@@ -16,7 +18,6 @@ pub async fn start(stream: &mut TcpStream, stbl: u8) {
 
     let mut response_type = 0u8;
     let mut step = 0u8;
-    let mut id = 0u8;
     let mut sensor: Vec<f32> = vec![];
 
     let mut i = 0u8;
@@ -33,7 +34,6 @@ pub async fn start(stream: &mut TcpStream, stbl: u8) {
             if response_type == 128 { println!("{}", get(response_type)) }
         } else if i % (step + 2) == 1 {
             stream.read(&mut buff16).await.unwrap();
-            id = buff16[15];
             sensor = vec![];
         } else {
             if response_type == 19 {
@@ -46,16 +46,18 @@ pub async fn start(stream: &mut TcpStream, stbl: u8) {
         }
 
         if sensor.len() == step as usize {
+            let lokal = Local::now();
             let mut coll = vec![];
-            coll.push(id.to_string());
+            coll.push(
+                format!("{}", lokal.format("%Y-%m-%d %H:%M:%S%.6f"))
+            );
 
             for sen in &sensor {
                 coll.push(sen.to_string())
             }
 
-            println!("{:?}", coll);
-            // let mut wtr = csv::Writer::from_path("coba.csv").unwrap();
-            // wtr.write_record(&coll).unwrap();
+            print!("\r{:?}  ", coll);
+            stdout().flush().unwrap();
         }
 
         i += 1;
