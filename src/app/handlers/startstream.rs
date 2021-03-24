@@ -1,14 +1,20 @@
 use tokio::sync::Mutex;
 use actix_web::rt::spawn;
 use actix_web::rt::net::TcpStream;
-use actix_web::{get, HttpResponse, web};
+use actix_web::{post, HttpResponse, web};
 use crate::app::models::SimpleMessage;
 use crate::app::AppError;
 use crate::app::helpers::stream::start;
 
 
-#[get("/startstream")]
+#[derive(Deserialize)]
+pub struct DtcSimpleSetup {
+    stbl: u8
+}
+
+#[post("/startstream")]
 pub async fn start_stream(
+    payload: web::Json<DtcSimpleSetup>,
     tcp_conn_spawn: web::Data<Mutex<TcpStream>>
 ) -> Result<HttpResponse, AppError> {
     let message = SimpleMessage::new(
@@ -23,7 +29,7 @@ pub async fn start_stream(
         let mut conn = tcp_conn_spawn.lock().await;
         let conn = &mut *conn;
 
-        start(conn, 2).await;
+        start(conn, payload.0.stbl).await;
     });
 
     Ok(HttpResponse::Ok().json(message))
