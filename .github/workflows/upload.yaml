@@ -1,0 +1,32 @@
+name: Uploading Release Asset
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build_worker:
+    name: Build Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Latest Version
+        uses: actions/checkout@v2
+
+      - name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build Aeronitium Using Cargo
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features
+
+      - name: Upload Aeronitium to Release
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: target/release/aeronitium
+          allow_override: true
