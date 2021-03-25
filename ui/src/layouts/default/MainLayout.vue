@@ -10,7 +10,7 @@
     >
       <q-scroll-area class="fit">
         <q-list padding>
-          <q-item clickable v-ripple :active="$route.name === 'home'">
+          <q-item clickable v-ripple to="/" :active="$route.name === 'home'" exact>
             <q-item-section avatar>
               <q-icon name="fas fa-home" />
             </q-item-section>
@@ -25,7 +25,7 @@
             </q-tooltip>
           </q-item>
 
-          <q-item clickable v-ripple>
+          <q-item clickable v-ripple to="/configs" :active="$route.name === 'configs'">
             <q-item-section avatar>
               <q-icon name="fas fa-cogs" />
             </q-item-section>
