@@ -3,8 +3,7 @@
     <div class="col-6">
       <q-card class="text-center">
         <q-card-section class="q-pb-none">
-          <BannerComponent class="overflow-auto" />
-          <i>DTC firmware v2.02</i>
+          <BannerComponent />
         </q-card-section>
 
         <q-separator inset />
