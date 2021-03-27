@@ -221,7 +221,12 @@
         <q-card-actions align="around">
           <q-btn flat @click="dtc_command(1)">ReZero</q-btn>
           <q-btn flat @click="dtc_command(2)">Status Scanner</q-btn>
-          <q-btn flat :disable="precheck_stream">Atur Stream</q-btn>
+          <q-btn flat
+                 :disable="precheck_stream"
+                 @click="dtc_command(3)"
+          >
+            Atur Stream
+          </q-btn>
         </q-card-actions>
       </q-card>
 
@@ -233,13 +238,7 @@
         transition-hide="slide-down"
       >
         <q-card dark class="bg-primary bg-grey-9 full-height">
-          <q-bar>
-            <div>Pesan Aeronitium</div>
-          </q-bar>
-
-          <q-card-section class="row items-center justify-center card_font_size full-height"
-                          style="margin-top: -32px"
-          >
+          <q-card-section class="row items-center justify-center card_font_size full-height">
             <div class="col-5 text-center">
               <q-spinner-clock color="white" size="3em" class="q-mb-lg" v-if="!show_button_dialog" />
 
@@ -247,18 +246,34 @@
                 Proses sedang berlangsung dan membutuhkan waktu beberapa menit. Harap bersabar...🙏
               </p>
 
-              <p v-else>
-                {{ payload.code_message }}.
-                {{ payload.kind_message }}.
-                <b>{{ payload.data }}</b>
-              </p>
+              <div v-else>
+                <p v-if="data_coef.length === 0">
+                  {{ payload.code_message }}.
+                  {{ payload.kind_message }}.
+                  <b>{{ payload.data }}</b>
+                </p>
+
+                <q-table
+                  title="Koefisien Kalibrasi"
+                  :data="data_coef"
+                  :columns="columns_coef"
+                  separator="cell"
+                  row-key="gradient"
+                  color="primary"
+                  card-class="bg-grey-10"
+                  table-class="text-grey-6"
+                  table-header-class="text-orange"
+                  dark
+                  v-else
+                />
+              </div>
 
               <br />
               <q-btn
                 outline
                 color="white"
                 label="Tutup"
-                class="q-mt-lg"
+                class="q-my-lg"
                 v-if="show_button_dialog"
                 @click="close_dialog"
               />
