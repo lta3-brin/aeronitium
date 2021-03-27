@@ -1,2 +1,4 @@
-export function someGetter (/* state */) {
+export function dtcGetter (state) {
+  return state.dtc
 }
+
