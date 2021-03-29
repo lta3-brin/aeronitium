@@ -6,8 +6,9 @@ description: Adapter aplikasi Aeronitium
 environment:
   sdk: '>=2.10.0 <3.0.0'
 
-#dependencies:
-#  path: ^1.7.0
+dependencies:
+  dart_nats: ^0.2.0
+  socket_io: ^0.9.4
 
 dev_dependencies:
   pedantic: ^1.9.0
