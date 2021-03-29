@@ -1,18 +1,19 @@
 <template>
-  <q-page class="row justify-center q-pa-xl">
+  <q-page class="row items-center justify-center q-pa-xl">
     <div class="col-6">
-      <q-card class="text-center">
+      <q-card dark class="text-center bg-grey-9">
         <q-card-section class="q-pb-none">
           <BannerComponent />
         </q-card-section>
 
-        <q-separator inset />
+        <q-separator dark inset />
 
         <br />
         <h4 class="q-ma-none q-ml-md text-uppercase text-left">Konfigurasi</h4>
         <q-card-section class="card_font_size q-gutter-md row items-start">
           <q-select
             filled
+            dark
             v-model="crs"
             :options="crs_options"
             label="CRS"
@@ -23,6 +24,7 @@
 
           <q-select
             filled
+            dark
             v-model="num_channels"
             :options="num_channels_options"
             label="Jumlah Channel/port"
@@ -33,18 +35,20 @@
 
           <q-input
             v-model="scn_address"
-            ref="input"
             filled
+            dark
             type="text"
             label="Scanner"
             hint="1, 2, atau 1-8"
             style="width: 125px;"
+            ref="scn_address"
             no-error-icon
             :rules="[val => !!val || 'Diperlukan']"
           />
 
           <q-select
             filled
+            dark
             v-model="lrn"
             :options="lrn_options"
             label="LRN"
@@ -55,30 +59,46 @@
 
           <q-input
             v-model="stbl"
-            ref="input"
             filled
+            dark
             label="STBL"
             type="number"
             hint="Setup table"
             style="width: 120px;"
+            ref="stbl"
             no-error-icon
-            :rules="[val => !!val || 'Diperlukan']"
+            :rules="[
+              val => !!val || 'Diperlukan',
+              val => val >= 1 || 'Min. 1'
+            ]"
           />
 
           <q-input
             v-model="sport"
-            ref="input"
             filled
+            dark
             type="text"
             label="PORT"
             hint="101-164 atau 101-116, 202-208, 301-308"
             style="width: 300px;"
+            ref="sport"
             no-error-icon
             :rules="[val => !!val || 'Diperlukan']"
           />
+
+          <q-select
+            filled
+            dark
+            v-model="scn_number"
+            :options="scn_number_options"
+            label="No. Scanner"
+            dropdown-icon="fas fa-chevron-down"
+            style="width: 150px;"
+            hint="Status scanner"
+          />
         </q-card-section>
 
-        <q-separator inset />
+        <q-separator dark inset />
 
         <br />
         <h4 class="q-ma-none q-ml-md text-uppercase text-left">Pengukuran</h4>
@@ -86,12 +106,13 @@
           <q-input
             v-model="nfr"
             filled
+            dark
             label="NFR"
             type="number"
             hint="1=no avg., default=64"
             style="width: 180px;"
             no-error-icon
-            ref="input"
+            ref="nfr"
             :rules="[
               val => !!val || 'Diperlukan',
               val => val >= 1 || 'Min. 1',
@@ -102,12 +123,13 @@
           <q-input
             v-model="frd"
             filled
+            dark
             label="FRD"
             type="number"
             hint="Frame delay"
             style="width: 250px;"
             no-error-icon
-            ref="input"
+            ref="frd"
             :rules="[
               val => !!val || 'Diperlukan',
               val => val >= 0 || 'Min. 0 microseconds',
@@ -118,12 +140,13 @@
           <q-input
             v-model="nms"
             filled
+            dark
             label="NMS"
             type="number"
             hint="Number measurement"
             style="width: 180px;"
             no-error-icon
-            ref="input"
+            ref="nms"
             :rules="[
               val => !!val || 'Diperlukan',
               val => val >= 0 || 'Min. 0',
@@ -134,12 +157,13 @@
           <q-input
             v-model="msd"
             filled
+            dark
             label="MSD"
             type="number"
             hint="Milli sec. delay"
             style="width: 180px;"
             no-error-icon
-            ref="input"
+            ref="msd"
             :rules="[
               val => !!val || 'Diperlukan',
               val => val >= 3 || 'Min. 3 ms',
@@ -149,6 +173,7 @@
 
           <q-select
             filled
+            dark
             v-model="trm"
             :options="trm_options"
             label="TRM"
@@ -159,6 +184,7 @@
 
           <q-select
             filled
+            dark
             v-model="scm"
             :options="scm_options"
             label="SCM"
@@ -169,6 +195,7 @@
 
           <q-select
             filled
+            dark
             v-model="ocf"
             :options="ocf_options"
             label="OCF"
@@ -179,6 +206,7 @@
 
           <q-select
             filled
+            dark
             v-model="unx"
             :options="unx_options"
             label="UNIT"
@@ -187,7 +215,72 @@
             hint="Engineering Unit"
           />
         </q-card-section>
+
+        <q-separator dark inset />
+
+        <q-card-actions align="around">
+          <q-btn flat @click="dtc_command(1)">ReZero</q-btn>
+          <q-btn flat @click="dtc_command(2)">Status Scanner</q-btn>
+          <q-btn flat
+                 :disable="precheck_stream"
+                 @click="dtc_command(3)"
+          >
+            Atur Stream
+          </q-btn>
+        </q-card-actions>
       </q-card>
+
+      <q-dialog
+        v-model="dtc_dialog"
+        maximized
+        persistent
+        transition-show="slide-up"
+        transition-hide="slide-down"
+      >
+        <q-card dark class="bg-primary bg-grey-9 full-height">
+          <q-card-section class="row items-center justify-center card_font_size full-height">
+            <div class="col-5 text-center">
+              <q-spinner-clock color="white" size="3em" class="q-mb-lg" v-if="!show_button_dialog" />
+
+              <p v-if="!show_button_dialog">
+                Proses sedang berlangsung dan membutuhkan waktu beberapa menit. Harap bersabar...🙏
+              </p>
+
+              <div v-else>
+                <p v-if="data_coef.length === 0">
+                  {{ payload.code_message }}.
+                  {{ payload.kind_message }}.
+                  <b>{{ payload.data }}</b>
+                </p>
+
+                <q-table
+                  title="Koefisien Kalibrasi"
+                  :data="data_coef"
+                  :columns="columns_coef"
+                  separator="cell"
+                  row-key="gradient"
+                  color="primary"
+                  card-class="bg-grey-10"
+                  table-class="text-grey-6"
+                  table-header-class="text-orange"
+                  dark
+                  v-else
+                />
+              </div>
+
+              <br />
+              <q-btn
+                outline
+                color="white"
+                label="Tutup"
+                class="q-my-lg"
+                v-if="show_button_dialog"
+                @click="close_dialog"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>

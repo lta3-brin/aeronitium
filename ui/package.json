@@ -2,7 +2,7 @@
   "name": "aeronitium_ui",
   "version": "0.0.1",
   "description": "Aplikasi stream sensor tekanan udara kecepatan tinggi dengan DTC Initium",
-  "productName": "Aeronitium BBTA3",
+  "productName": "AeronitiumBBTA3",
   "author": "4KB4RPN136 <akbarpn136@gmail.com>",
   "private": true,
   "scripts": {

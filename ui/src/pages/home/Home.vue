@@ -1,12 +1,12 @@
 <template>
   <q-page class="row items-center justify-center q-pa-md">
     <div class="col-6">
-      <q-card class="text-center">
+      <q-card dark class="text-center bg-grey-9">
         <q-card-section class="q-pb-none">
           <BannerComponent />
         </q-card-section>
 
-        <q-separator inset />
+        <q-separator dark inset />
 
         <br />
         <q-card-section class="card_font_size">
@@ -16,7 +16,7 @@
           </p>
           <p>
             <b>Aeronitium</b> dikembangkan dengan <span class="text-red">❤️</span> oleh
-            <a href="https://github.com/bbta3-bppt/aeronitium" rel="noreferrer nofollow" target="_blank">
+            <a href="" @click.capture="onAbout" class="text-amber-9">
               <i>AEROTRONIKA</i>
             </a>.
           </p>
