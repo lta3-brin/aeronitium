@@ -22,7 +22,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --all-features
+          args: --release
 
       - name: Upload Aeronitium to Release
         uses: meeDamian/github-release@2.0
