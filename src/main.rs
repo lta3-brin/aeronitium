@@ -1,5 +1,6 @@
 mod app;
 
+use actix_cors::Cors;
 use tokio::sync::Mutex;
 use actix_web::rt::net::TcpStream;
 use actix_web::{App, HttpServer, web};
@@ -19,6 +20,7 @@ async fn main() -> Result<(), AppError> {
 
     let server = HttpServer::new(move || {
         App::new()
+            .wrap(Cors::default().allow_any_origin().allow_any_header().allow_any_method())
             .app_data(tcp_conn.clone())
             .configure(app_routers)
     }).bind(conf.get_server_addr())?;
