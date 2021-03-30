@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 actix-web = "3"
 chrono = "0.4.19"
+async-nats = "0.9"
 actix-cors = "0.5"
 derive_more = "0.99"
 tokio = { version = "0.2", features = ["full"] }
