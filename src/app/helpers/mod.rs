@@ -5,3 +5,4 @@ pub mod simplesetup;
 pub mod initialization;
 pub mod output;
 pub mod stream;
+pub mod process;
