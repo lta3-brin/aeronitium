@@ -7,6 +7,7 @@ environment:
   sdk: '>=2.10.0 <3.0.0'
 
 dependencies:
+  dotenv: ^2.0.0
   dart_nats: ^0.2.0
   socket_io: ^0.9.4
 
