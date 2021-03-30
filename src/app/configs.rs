@@ -5,11 +5,16 @@ use std::env;
 pub struct AppEnvironment {
     server_address: String,
     dtc_address: String,
+    nats_address: String
 }
 
 impl AppEnvironment {
-    pub fn new(server_address: String, dtc_address: String) -> Self {
-        Self { server_address, dtc_address }
+    pub fn new(
+        server_address: String,
+        dtc_address: String,
+        nats_address: String
+    ) -> Self {
+        Self { server_address, dtc_address, nats_address }
     }
 
     pub fn get_server_addr(&self) -> String {
@@ -18,6 +23,10 @@ impl AppEnvironment {
 
     pub fn get_dtc_addr(&self) -> String {
         self.dtc_address.clone()
+    }
+
+    pub fn get_nats_addr(&self) -> String {
+        self.nats_address.clone()
     }
 }
 
@@ -32,5 +41,10 @@ pub fn get_configs() -> AppEnvironment {
         Err(_) => String::from("192.168.129.119:8400")
     };
 
-    AppEnvironment::new(srv, dtc)
+    let nats = match env::var("NATS_ADDRESS") {
+        Ok(s) => s,
+        Err(_) => String::from("127.0.0.1:4222")
+    };
+
+    AppEnvironment::new(srv, dtc, nats)
 }
