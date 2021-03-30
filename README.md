@@ -14,5 +14,6 @@ _Environment variables_ sebagai berikut:
 
 ```text
 APP_ADDRESS=0.0.0.0:8080
+NATS_ADDRESS=127.0.0.1
 DTC_ADDRESS=192.168.129.119:8400
 ```
