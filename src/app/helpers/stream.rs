@@ -1,17 +1,22 @@
 use chrono::Local;
+use async_nats::Connection;
 use std::io::{stdout, Write};
 use tokio::{
     net::TcpStream,
     io::{AsyncWriteExt, AsyncReadExt}
 };
-use crate::app::models::SimpleMessage;
 use crate::app::AppError;
 use crate::app::helpers::display;
+use crate::app::models::SimpleMessage;
 use crate::app::decoders::response_type::get;
 
 
 #[allow(dead_code)]
-pub async fn start(stream: &mut TcpStream, stbl: u8) {
+pub async fn start(
+    stream: &mut TcpStream,
+    stbl: u8,
+    nats: &mut Connection
+) {
     let mut buff4 = [0u8; 4];
     let mut buff8 = [0u8; 8];
     let mut buff16 = [0u8; 16];
@@ -56,6 +61,7 @@ pub async fn start(stream: &mut TcpStream, stbl: u8) {
                 coll.push(sen.to_string())
             }
 
+            nats.publish("dtc", coll.join(",")).await.unwrap();
             print!("\r{:?}  ", coll);
             stdout().flush().unwrap();
         }
