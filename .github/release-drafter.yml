@@ -1,7 +1,7 @@
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 template: |
-  ## Ini merupakan pengembangan riset aerobro
+  ## Ini merupakan pengembangan riset aeronitium
   Kunjungi kami juga di website https://bbta3.bppt.go.id dan
   video BBTA3 dapat dikunjungi https://www.youtube.com/channel/UCa0_hm_SiHxps1Llk_q6I1Q
   Perlu melakukan chat atau berminat gabung, masuk ke tautan berikut ini https://discord.gg/Pnn6Htg
