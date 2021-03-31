@@ -8,7 +8,8 @@ edition = "2018"
 
 [dependencies]
 actix-web = "3"
-chrono = "0.4.19"
+chrono = "0.4"
+dotenv = "0.15"
 async-nats = "0.9"
 actix-cors = "0.5"
 derive_more = "0.99"

@@ -70,10 +70,8 @@ module.exports = function (/* ctx */) {
           .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
       },
 
-      // https://quasar.dev/quasar-cli/handling-process-env#adding-to-process-env
-      env: {
-        APP_ADDRESS: process.env.APP_ADDRESS || 'http://localhost:8080'
-      }
+      // https://quasar.dev/quasar-cli/quasar-conf-js#using-dotenv
+      env: require('dotenv').config().parsed
     },
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
