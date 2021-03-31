@@ -1,6 +1,6 @@
 <template>
   <q-page class="row items-center justify-center">
-    <div class="col-12 q-px-md">
+    <div class="col-12 q-pa-md">
       <q-card dark class="text-center bg-grey-9">
         <q-card-section class="q-pb-none">
           <BannerComponent />
@@ -9,7 +9,7 @@
         <q-separator dark inset />
 
         <q-card-section>
-          <Plotly :data="data" :layout="layout" :displaylogo="false" />
+          <div id="plotplot"></div>
         </q-card-section>
       </q-card>
     </div>

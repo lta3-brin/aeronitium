@@ -1,4 +1,4 @@
-import { Plotly } from "vue-plotly"
+import Plotly from "plotly.js-dist"
 import BannerComponent from "src/components/banner/banner.vue"
 
 export default {
@@ -9,47 +9,55 @@ export default {
   },
   data() {
     return {
-      data:[
+      interval: null,
+      traces:[
         {
-          x: [1, 2, 3, 4],
-          y: [10, 15, 13, 17],
+          x: [],
+          y: [],
           type: 'scatter',
           mode: 'lines',
-          name: 'Port 1'
+          fill: 'tozeroy',
+          name: 'PORT 1',
+          xaxis: 'x',
+          yaxis: 'y',
         },
         {
-          x: [1, 2, 3, 4],
-          y: [16, 5, 11, 9],
+          x: [],
+          y: [],
           type: 'scatter',
           mode: 'lines',
-          name: 'Port 2',
+          fill: 'tozeroy',
+          name: 'PORT 2',
           xaxis: 'x2',
           yaxis: 'y2',
         },
         {
-          x: [1, 2, 3, 4],
-          y: [11, 9, 22, 5],
+          x: [],
+          y: [],
           type: 'scatter',
           mode: 'lines',
-          name: 'Port 3',
+          fill: 'tozeroy',
+          name: 'PORT 3',
           xaxis: 'x3',
           yaxis: 'y3',
         },
         {
-          x: [1, 2, 3, 4],
-          y: [2, 7, 3, 9],
+          x: [],
+          y: [],
           type: 'scatter',
           mode: 'lines',
-          name: 'Port 4',
+          fill: 'tozeroy',
+          name: 'PORT 4',
           xaxis: 'x4',
           yaxis: 'y4',
         },
         {
-          x: [1, 2, 3, 4],
-          y: [5, 17, 15, 10],
+          x: [],
+          y: [],
           type: 'scatter',
           mode: 'lines',
-          name: 'Port 5',
+          fill: 'tozeroy',
+          name: 'PORT 5',
           xaxis: 'x5',
           yaxis: 'y5',
         }
@@ -67,12 +75,18 @@ export default {
         margin: {
           t: 10,
           b: 0,
-          l: 15,
-          r: 10
+          l: 32,
+          r: 5,
+          pad: 10
         },
-        xaxis1: {
+        grid: {
+          rows: 5,
+          columns: 1,
+          pattern: 'independent',
+          roworder: 'bottom to top'
+        },
+        xaxis: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -80,7 +94,6 @@ export default {
         },
         xaxis2: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -88,7 +101,6 @@ export default {
         },
         xaxis3: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -96,7 +108,6 @@ export default {
         },
         xaxis4: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -104,15 +115,14 @@ export default {
         },
         xaxis5: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
           tickfont : {
             size : 10,
             color : '#F2A488'
           }
         },
-        yaxis1: {
+        yaxis: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
+          zerolinecolor: "#2A3842",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -120,7 +130,7 @@ export default {
         },
         yaxis2: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
+          zerolinecolor: "#2A3842",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -128,7 +138,7 @@ export default {
         },
         yaxis3: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
+          zerolinecolor: "#2A3842",
           tickfont : {
             size : 10,
             color : '#F2A488'
@@ -136,26 +146,90 @@ export default {
         },
         yaxis4: {
           gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
+          zerolinecolor: "#2A3842",
           tickfont : {
             size : 10,
             color : '#F2A488'
           }
         },
         yaxis5: {
-          gridcolor: "rgba(147, 143, 141, 0.1)",
-          zerolinecolor: "#0A222A",
+          gridcolor: "rgba(147,143,141,0.1)",
+          zerolinecolor: "#2A3842",
           tickfont : {
             size : 10,
             color : '#F2A488'
           }
-        },
-        grid: {
-          rows: 5,
-          columns: 1,
-          pattern: 'independent',
-          roworder: 'bottom to top'}
+        }
       }
+    }
+  },
+  mounted() {
+    this.plot()
+  },
+  destroyed() {
+    clearInterval(this.interval)
+  },
+  methods: {
+    randomPressure() {
+      return 101325 * Math.random()
+    },
+    plot() {
+      Plotly.newPlot('plotplot', this.traces, this.layout, {
+        displaylogo: false,
+        responsive: true
+      });
+
+      this.interval = setInterval(() => {
+        const time = new Date();
+
+        const update = {
+          x:  [[time], [time], [time], [time], [time]],
+          y: [
+            [this.randomPressure()],
+            [this.randomPressure()],
+            [this.randomPressure()],
+            [this.randomPressure()],
+            [this.randomPressure()],
+          ]
+        }
+
+        const pastTime = time.setMinutes(time.getMinutes() - 1);
+        const futureTime = time.setMinutes(time.getMinutes() + 1);
+
+        Plotly.relayout('plotplot', {
+          xaxis: {
+            type: 'date',
+            range: [pastTime,futureTime],
+            gridcolor: "rgba(147, 143, 141, 0.1)",
+            tickfont : {
+              size : 10,
+              color : '#F2A488'
+            }
+          },
+          xaxis2: {
+            type: 'date',
+            range: [pastTime,futureTime],
+            gridcolor: "rgba(147, 143, 141, 0.1)",
+          },
+          xaxis3: {
+            type: 'date',
+            range: [pastTime,futureTime],
+            gridcolor: "rgba(147, 143, 141, 0.1)",
+          },
+          xaxis4: {
+            type: 'date',
+            range: [pastTime,futureTime],
+            gridcolor: "rgba(147, 143, 141, 0.1)",
+          },
+          xaxis5: {
+            type: 'date',
+            range: [pastTime,futureTime],
+            gridcolor: "rgba(147, 143, 141, 0.1)",
+          }
+        })
+
+        Plotly.extendTraces('plotplot', update, [0,1,2,3,4])
+      }, 1000)
     }
   }
 }
