@@ -6,12 +6,15 @@ on:
       - '*'
 
 jobs:
-  build_worker:
-    name: Build Worker
+  build_aeronitium:
+    name: Build Aeronitium
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest Version
         uses: actions/checkout@v2
+
+      - name: Make Aeronitium Directory
+        run: mkdir aeronitium
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
@@ -23,10 +26,55 @@ jobs:
         with:
           command: build
           args: --release
+          
+      - name: Move to Aeronitium Dir.
+        run: |
+          mv target/release/aeronitium aeronitium/
+          ls aeronitium/
+          
+      - name: Setup Dart Environment
+        uses: dart-lang/setup-dart@v1
+        
+      - name: Install dependencies and Compile
+        run: |
+          cd adapter
+          dart pub get
+          dart compile exe bin/adapter.dart -o ../adaptor
+          mv adaptor aeronitium/
+          ls aeronitium/
+          
+      - name: Install NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          
+      - name: Check and Install Dependencies
+        run: |
+          cd ui
+          node -v
+          npm -v
+          npm install
+          npm install -g @quasar/cli
+          
+      - name: Build UI
+        run: |
+          cd ui
+          quasar build -m electron
+          mv dist/electron/AeronitiumBBTA3-linux-x64/* ../aeronitium/
+          ls aeronitium/
+          
+      - name: Make envfile
+        run: |
+          cd aeronitium
+          cat > ./.env << ENDOFFILE
+          APP_ADDRESS=0.0.0.0:8080
+          NATS_ADDRESS=127.0.0.1
+          DTC_ADDRESS=192.168.129.119:8400
+          ENDOFFILE
 
       - name: Upload Aeronitium to Release
         uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: target/release/aeronitium
+          files: aeronitium/
           allow_override: true
