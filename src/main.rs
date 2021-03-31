@@ -1,5 +1,6 @@
 mod app;
 
+use dotenv::dotenv;
 use actix_cors::Cors;
 use tokio::sync::Mutex;
 use actix_web::rt::net::TcpStream;
@@ -13,8 +14,9 @@ use crate::app::helpers::display::display_banner;
 
 #[actix_web::main]
 async fn main() -> Result<(), AppError> {
-    let conf = get_configs();
+    dotenv().ok();
 
+    let conf = get_configs();
     let tcp_conn = web::Data::new(Mutex::new(
         TcpStream::connect(conf.get_dtc_addr()).await?
     ));
