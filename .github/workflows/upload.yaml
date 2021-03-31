@@ -26,28 +26,29 @@ jobs:
         with:
           command: build
           args: --release
-          
-      - name: Move to Aeronitium Dir.
+
+      - name: Move to Aeronitium Directory
         run: |
           mv target/release/aeronitium aeronitium/
           ls aeronitium/
-          
+
       - name: Setup Dart Environment
         uses: dart-lang/setup-dart@v1
-        
+
       - name: Install dependencies and Compile
         run: |
           cd adapter
           dart pub get
           dart compile exe bin/adapter.dart -o ../adaptor
+          cd ..
           mv adaptor aeronitium/
           ls aeronitium/
-          
+
       - name: Install NodeJS
         uses: actions/setup-node@v2
         with:
           node-version: '14.x'
-          
+
       - name: Check and Install Dependencies
         run: |
           cd ui
@@ -55,20 +56,22 @@ jobs:
           npm -v
           npm install
           npm install -g @quasar/cli
-          
+
       - name: Build UI
         run: |
           cd ui
           quasar build -m electron
           mv dist/electron/AeronitiumBBTA3-linux-x64/* ../aeronitium/
+          cd ..
           ls aeronitium/
-          
+
       - name: Make envfile
         run: |
           cd aeronitium
           cat > ./.env << ENDOFFILE
-          APP_ADDRESS=0.0.0.0:8080
           NATS_ADDRESS=127.0.0.1
+          APP_ADDRESS=0.0.0.0:8080
+          UI_ADDRESS=http://localhost:8080
           DTC_ADDRESS=192.168.129.119:8400
           ENDOFFILE
 
