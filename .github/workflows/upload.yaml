@@ -40,6 +40,7 @@ jobs:
           cd adapter
           dart pub get
           dart compile exe bin/adapter.dart -o ../adaptor
+          cd ..
           mv adaptor aeronitium/
           ls aeronitium/
           
