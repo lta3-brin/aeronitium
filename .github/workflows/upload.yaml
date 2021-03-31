@@ -62,6 +62,7 @@ jobs:
           cd ui
           quasar build -m electron
           mv dist/electron/AeronitiumBBTA3-linux-x64/* ../aeronitium/
+          cd ..
           ls aeronitium/
 
       - name: Make envfile
