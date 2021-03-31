@@ -16,8 +16,8 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
-    "quasar": "^1.0.0",
-    "vue-plotly": "^1.1.0"
+    "plotly.js-dist": "^1.58.4",
+    "quasar": "^1.0.0"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",
