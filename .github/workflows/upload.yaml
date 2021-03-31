@@ -67,8 +67,9 @@ jobs:
         run: |
           cd aeronitium
           cat > ./.env << ENDOFFILE
-          APP_ADDRESS=0.0.0.0:8080
           NATS_ADDRESS=127.0.0.1
+          APP_ADDRESS=0.0.0.0:8080
+          UI_ADDRESS=http://localhost:8080
           DTC_ADDRESS=192.168.129.119:8400
           ENDOFFILE
 
