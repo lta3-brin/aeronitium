@@ -24,6 +24,7 @@ jobs:
           SOCKET_ADDRESS=http://localhost:3000
           ENDOFFILE
           cp .env ui/
+          cp .env aeronitium/
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
