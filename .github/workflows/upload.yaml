@@ -13,8 +13,17 @@ jobs:
       - name: Checkout Latest Version
         uses: actions/checkout@v2
 
-      - name: Make Aeronitium Directory
-        run: mkdir aeronitium
+      - name: Make Aeronitium Directory and Env
+        run: |
+          mkdir aeronitium
+          cat > ./.env << ENDOFFILE
+          APP_ADDRESS=0.0.0.0:8080
+          NATS_ADDRESS=localhost:4222
+          UI_ADDRESS=http://localhost:8080
+          DTC_ADDRESS=192.168.129.119:8400
+          SOCKET_ADDRESS=http://localhost:3000
+          ENDOFFILE
+          cp .env ui/
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
@@ -49,28 +58,10 @@ jobs:
       - name: Build UI
         run: |
           cd ui
-          cat > ./.env << ENDOFFILE
-          APP_ADDRESS=0.0.0.0:8080
-          NATS_ADDRESS=127.0.0.1:4222
-          UI_ADDRESS=http://localhost:8080
-          DTC_ADDRESS=192.168.129.119:8400
-          SOCKET_ADDRESS=http://localhost:3000
-          ENDOFFILE
           quasar build -m electron
           mv dist/electron/AeronitiumBBTA3-linux-x64/* ../aeronitium/
           cd ..
           ls aeronitium/
-
-      - name: Make envfile
-        run: |
-          cd aeronitium
-          cat > ./.env << ENDOFFILE
-          APP_ADDRESS=0.0.0.0:8080
-          NATS_ADDRESS=127.0.0.1:4222
-          UI_ADDRESS=http://localhost:8080
-          DTC_ADDRESS=192.168.129.119:8400
-          SOCKET_ADDRESS=http://localhost:3000
-          ENDOFFILE
 
       - name: Upload Aeronitium to Release
         uses: meeDamian/github-release@2.0
