@@ -16,7 +16,7 @@ use crate::app::helpers::display::display_banner;
 async fn main() -> Result<(), AppError> {
     dotenv().ok();
 
-    let conf = get_configs();
+    let conf = get_configs()?;
     let tcp_conn = web::Data::new(Mutex::new(
         TcpStream::connect(conf.get_dtc_addr()).await?
     ));
