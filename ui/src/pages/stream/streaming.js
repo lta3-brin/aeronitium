@@ -10,7 +10,7 @@ export default {
   data() {
     return {
       interval: null,
-      traces:[
+      traces: [
         {
           x: [],
           y: [],

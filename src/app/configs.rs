@@ -1,4 +1,5 @@
 use std::env;
+use crate::app::AppError;
 
 
 #[derive(Debug)]
@@ -30,21 +31,10 @@ impl AppEnvironment {
     }
 }
 
-pub fn get_configs() -> AppEnvironment {
-    let srv = match env::var("SERVER_ADDRESS") {
-        Ok(s) => s,
-        Err(_) => String::from("0.0.0.0:8080")
-    };
+pub fn get_configs() -> Result<AppEnvironment, AppError> {
+    let srv = env::var("APP_ADDRESS")?;
+    let dtc = env::var("DTC_ADDRESS")?;
+    let nats = env::var("NATS_ADDRESS")?;
 
-    let dtc = match env::var("DTC_ADDRESS") {
-        Ok(s) => s,
-        Err(_) => String::from("192.168.129.119:8400")
-    };
-
-    let nats = match env::var("NATS_ADDRESS") {
-        Ok(s) => s,
-        Err(_) => String::from("127.0.0.1:4222")
-    };
-
-    AppEnvironment::new(srv, dtc, nats)
+    Ok(AppEnvironment::new(srv, dtc, nats))
 }

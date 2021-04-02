@@ -25,7 +25,7 @@ pub async fn calib_rezero(
         stream, buffer, payload.0.lrn
     ).await?;
 
-    let configs = get_configs();
+    let configs = get_configs()?;
     *stream = TcpStream::connect(configs.get_dtc_addr()).await?;
 
     Ok(HttpResponse::Ok().json(message))

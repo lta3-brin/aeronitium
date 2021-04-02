@@ -3,8 +3,6 @@ use crate::app::AppError;
 
 
 pub fn run_script() -> Result<(), AppError> {
-    println!();
-
     if cfg!(target_os = "windows") {
         Command::new("cmd")
             .args(&["/C", "adaptor.exe"])

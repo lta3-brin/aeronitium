@@ -13,8 +13,18 @@ jobs:
       - name: Checkout Latest Version
         uses: actions/checkout@v2
 
-      - name: Make Aeronitium Directory
-        run: mkdir aeronitium
+      - name: Make Aeronitium Directory and Env
+        run: |
+          mkdir aeronitium
+          cat > ./.env << ENDOFFILE
+          APP_ADDRESS=0.0.0.0:8080
+          NATS_ADDRESS=localhost:4222
+          UI_ADDRESS=http://localhost:8080
+          DTC_ADDRESS=192.168.129.119:8400
+          SOCKET_ADDRESS=http://localhost:3000
+          ENDOFFILE
+          cp .env ui/
+          cp .env aeronitium/
 
       - name: Install Rust Toolchain
         uses: actions-rs/toolchain@v1
@@ -25,23 +35,12 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release
+          args: --release --all
 
       - name: Move to Aeronitium Directory
         run: |
           mv target/release/aeronitium aeronitium/
-          ls aeronitium/
-
-      - name: Setup Dart Environment
-        uses: dart-lang/setup-dart@v1
-
-      - name: Install dependencies and Compile
-        run: |
-          cd adapter
-          dart pub get
-          dart compile exe bin/adapter.dart -o ../adaptor
-          cd ..
-          mv adaptor aeronitium/
+          mv target/release/adapter aeronitium/adaptor
           ls aeronitium/
 
       - name: Install NodeJS
@@ -64,16 +63,6 @@ jobs:
           mv dist/electron/AeronitiumBBTA3-linux-x64/* ../aeronitium/
           cd ..
           ls aeronitium/
-
-      - name: Make envfile
-        run: |
-          cd aeronitium
-          cat > ./.env << ENDOFFILE
-          NATS_ADDRESS=127.0.0.1
-          APP_ADDRESS=0.0.0.0:8080
-          UI_ADDRESS=http://localhost:8080
-          DTC_ADDRESS=192.168.129.119:8400
-          ENDOFFILE
 
       - name: Upload Aeronitium to Release
         uses: meeDamian/github-release@2.0
