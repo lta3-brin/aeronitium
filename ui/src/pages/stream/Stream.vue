@@ -8,7 +8,8 @@
 
         <q-separator dark inset />
 
-        <q-card-section>
+        <q-card-section class="card_font_size">
+          <p v-if="!showplot">{{ pesan }}</p>
           <div id="plotplot"></div>
         </q-card-section>
       </q-card>

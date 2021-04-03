@@ -13,6 +13,7 @@ use crate::transfer::send_message;
 async fn main() -> Result<(), AdapterError> {
     dotenv().ok();
     println!("Menjalankan Aeronitium adapter");
+    println!("CTRL+C untuk berhenti streaming...");
 
     let nats_conn = env::var("NATS_ADDRESS")?;
     let nc = async_nats::connect(nats_conn.as_str()).await?;

@@ -1,6 +1,5 @@
 use chrono::Local;
 use async_nats::Connection;
-use std::io::{stdout, Write};
 use tokio::{
     net::TcpStream,
     io::{AsyncWriteExt, AsyncReadExt}
@@ -62,8 +61,6 @@ pub async fn start(
             }
 
             nats.publish("dtc", coll.join(",")).await.unwrap();
-            print!("\r{:?}  ", coll);
-            stdout().flush().unwrap();
         }
 
         i += 1;

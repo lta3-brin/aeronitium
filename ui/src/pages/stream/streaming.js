@@ -1,4 +1,5 @@
 import Plotly from "plotly.js-dist"
+import axios from "axios"
 import BannerComponent from "src/components/banner/banner.vue"
 
 export default {
@@ -9,7 +10,9 @@ export default {
   },
   data() {
     return {
-      interval: null,
+      connection: null,
+      showplot: false,
+      pesan: "Lakukan konfigurasi sebelum pantau sensor tekanan.",
       traces: [
         {
           x: [],
@@ -164,72 +167,110 @@ export default {
     }
   },
   mounted() {
-    this.plot()
+    this.connection = new WebSocket(process.env.SOCKET_ADDRESS)
+    this.connection.onopen = async () => {
+      this.showplot = false
+      this.pesan = "Mencoba terhubung dengan Aeronitium server..."
+
+      const stream_status = this.$store.getters["aeronitiummod/streamGetter"]
+
+      if (stream_status.ready_stream) {
+        this.plot()
+        if (stream_status.count === 0) { await this.req_stream() }
+      }
+    }
+
+    this.connection.onmessage = (event) => {
+      this.showplot = true
+
+      const data = event.data
+      const payload = data.split(",")
+      const tanggal = new Date(payload[0])
+
+      this.updatePlot(tanggal, payload)
+    }
+
+    this.connection.onclose = () => {
+      this.showplot = false
+      this.pesan = "Koneksi tidak terhubung dengan Aeronitium server..."
+    }
   },
   destroyed() {
-    clearInterval(this.interval)
+    this.connection.close()
   },
   methods: {
-    randomPressure() {
-      return 101325 * Math.random()
-    },
     plot() {
       Plotly.newPlot('plotplot', this.traces, this.layout, {
         displaylogo: false,
+        displayModeBar: false,
         responsive: true
       });
+    },
+    async req_stream() {
+      try {
+        const dtc = this.$store.getters["aeronitiummod/dtcGetter"]
 
-      this.interval = setInterval(() => {
-        const time = new Date();
-
-        const update = {
-          x:  [[time], [time], [time], [time], [time]],
-          y: [
-            [this.randomPressure()],
-            [this.randomPressure()],
-            [this.randomPressure()],
-            [this.randomPressure()],
-            [this.randomPressure()],
-          ]
-        }
-
-        const pastTime = time.setMinutes(time.getMinutes() - 1);
-        const futureTime = time.setMinutes(time.getMinutes() + 1);
-
-        Plotly.relayout('plotplot', {
-          xaxis: {
-            type: 'date',
-            range: [pastTime,futureTime],
-            gridcolor: "rgba(147, 143, 141, 0.1)",
-            tickfont : {
-              size : 10,
-              color : '#F2A488'
-            }
-          },
-          xaxis2: {
-            type: 'date',
-            range: [pastTime,futureTime],
-            gridcolor: "rgba(147, 143, 141, 0.1)",
-          },
-          xaxis3: {
-            type: 'date',
-            range: [pastTime,futureTime],
-            gridcolor: "rgba(147, 143, 141, 0.1)",
-          },
-          xaxis4: {
-            type: 'date',
-            range: [pastTime,futureTime],
-            gridcolor: "rgba(147, 143, 141, 0.1)",
-          },
-          xaxis5: {
-            type: 'date',
-            range: [pastTime,futureTime],
-            gridcolor: "rgba(147, 143, 141, 0.1)",
-          }
+        await axios.post(`${process.env.UI_ADDRESS}/startstream`, {
+          stbl: dtc.stbl
         })
 
-        Plotly.extendTraces('plotplot', update, [0,1,2,3,4])
-      }, 1000)
+        this.$store.commit("aeronitiummod/stremReadyMutation", {
+          count: 1,
+          ready_stream: true
+        })
+      } catch (err) {
+        this.showplot = false
+        this.pesan = `Terjadi kesalahan seputar: ${err.message}`
+      }
+    },
+    updatePlot(tanggal, payload) {
+      const update = {
+        x:  [[tanggal], [tanggal], [tanggal], [tanggal], [tanggal]],
+        y: [
+          [payload[1]],
+          [payload[2]],
+          [payload[3]],
+          [payload[4]],
+          [payload[5]],
+        ]
+      }
+
+      const pastTime = tanggal.setMinutes(tanggal.getMinutes() - 1);
+      const futureTime = tanggal.setMinutes(tanggal.getMinutes() + 1);
+
+      Plotly.relayout('plotplot', {
+        xaxis: {
+          type: 'date',
+          range: [pastTime,futureTime],
+          gridcolor: "rgba(147, 143, 141, 0.1)",
+          tickfont : {
+            size : 10,
+            color : '#F2A488'
+          }
+        },
+        xaxis2: {
+          type: 'date',
+          range: [pastTime,futureTime],
+          gridcolor: "rgba(147, 143, 141, 0.1)",
+        },
+        xaxis3: {
+          type: 'date',
+          range: [pastTime,futureTime],
+          gridcolor: "rgba(147, 143, 141, 0.1)",
+        },
+        xaxis4: {
+          type: 'date',
+          range: [pastTime,futureTime],
+          gridcolor: "rgba(147, 143, 141, 0.1)",
+        },
+        xaxis5: {
+          type: 'date',
+          range: [pastTime,futureTime],
+          gridcolor: "rgba(147, 143, 141, 0.1)",
+        }
+      })
+
+      Plotly.extendTraces('plotplot', update, [0,1,2,3,4])
     }
   }
 }
