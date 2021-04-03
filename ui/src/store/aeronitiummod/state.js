@@ -1,7 +1,10 @@
 export default function () {
   return {
-    dtc: {
+    stream: {
       ready_stream: false,
+      count: 0
+    },
+    dtc: {
       stbl: 2,
     }
   }
