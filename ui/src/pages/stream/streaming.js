@@ -172,11 +172,11 @@ export default {
       this.showplot = false
       this.pesan = "Mencoba terhubung dengan Aeronitium server..."
 
-      const dtc = this.$store.getters["aeronitiummod/dtcGetter"]
+      const stream_status = this.$store.getters["aeronitiummod/streamGetter"]
 
-      if (dtc.ready_stream) {
+      if (stream_status.ready_stream) {
         this.plot()
-        await this.req_stream()
+        if (stream_status.count === 0) { await this.req_stream() }
       }
     }
 
@@ -212,6 +212,11 @@ export default {
 
         await axios.post(`${process.env.UI_ADDRESS}/startstream`, {
           stbl: dtc.stbl
+        })
+
+        this.$store.commit("aeronitiummod/stremReadyMutation", {
+          count: 1,
+          ready_stream: true
         })
       } catch (err) {
         this.showplot = false
