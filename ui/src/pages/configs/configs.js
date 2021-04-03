@@ -104,7 +104,10 @@ export default {
               })
             })
 
-            this.$store.commit("aeronitiummod/stremReadyMutation", { ready_stream: true })
+            this.$store.commit("aeronitiummod/stremReadyMutation", {
+              ready_stream: true,
+              count: 0
+            })
           }
 
           break
