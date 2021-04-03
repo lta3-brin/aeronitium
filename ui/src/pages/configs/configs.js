@@ -71,7 +71,7 @@ export default {
 
       switch (number) {
         case 1:
-          this.payload = await do_rezero(this.lrn)
+          this.payload = await do_rezero(parseInt(this.lrn))
           break
         case 2:
           this.payload = await check_scanner(this.crs, this.scn_number)
@@ -81,13 +81,13 @@ export default {
             crs: this.crs,
             num_channels: this.num_channels,
             scn_address: this.scn_address,
-            lrn: this.lrn,
-            stbl: this.stbl,
+            lrn: parseInt(this.lrn),
+            stbl: parseInt(this.stbl),
             sport: this.sport,
-            nfr: this.nfr,
-            frd: this.frd,
-            nms: this.nms,
-            msd: this.msd,
+            nfr: parseInt(this.nfr),
+            frd: parseInt(this.frd),
+            nms: parseInt(this.nms),
+            msd: parseInt(this.msd),
             trm: this.trm,
             scm: this.scm,
             ocf: check_ocf(this.ocf),
@@ -103,6 +103,8 @@ export default {
                 gradient: row[1]
               })
             })
+
+            this.$store.commit("aeronitiummod/stremReadyMutation", { ready_stream: true })
           }
 
           break
