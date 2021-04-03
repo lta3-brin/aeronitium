@@ -3,5 +3,6 @@ export function dtcMutation (state, payload) {
 }
 
 export function stremReadyMutation (state, payload) {
-  state.dtc.ready_stream = payload.ready_stream
+  state.stream.ready_stream = payload.ready_stream
+  state.stream.count = payload.count
 }
