@@ -1,5 +1,6 @@
 mod app;
 
+use std::env;
 use dotenv::dotenv;
 use actix_cors::Cors;
 use tokio::sync::Mutex;
@@ -16,6 +17,7 @@ use crate::app::helpers::display::display_banner;
 async fn main() -> Result<(), AppError> {
     dotenv().ok();
 
+    let args = env::args().collect::<Vec<String>>();
     let conf = get_configs()?;
     let tcp_conn = web::Data::new(Mutex::new(
         TcpStream::connect(conf.get_dtc_addr()).await?
@@ -35,7 +37,13 @@ async fn main() -> Result<(), AppError> {
 
     println!("{}", display_banner());
     println!("Menjalankan server di {}", conf.get_server_addr().clone());
-    run_script()?;
+
+    if args.contains(&String::from("solo")) {
+        run_script()?;
+    } else {
+        println!("Jalankan adapter secara terpisah atau aktifkan ./aeronitium solo.");
+        println!("CTRL+C untuk berhenti streaming...");
+    }
 
     Ok(server.run().await?)
 }
