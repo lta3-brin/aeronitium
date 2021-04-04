@@ -167,7 +167,10 @@ export default {
     }
   },
   mounted() {
-    this.connection = new WebSocket(process.env.SOCKET_ADDRESS)
+    const data = this.$store.getters["aeronitiummod/addressGetter"]
+    const addr = `ws://${data.websocket}`
+
+    this.connection = new WebSocket(addr)
     this.connection.onopen = async () => {
       this.showplot = false
       this.pesan = "Mencoba terhubung dengan Aeronitium server..."
