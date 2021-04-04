@@ -67,17 +67,18 @@ export default {
       this.data_coef = []
     },
     async dtc_command(number) {
+      const data = this.$store.getters["aeronitiummod/addressGetter"]
       this.dtc_dialog = true
 
       switch (number) {
         case 1:
-          this.payload = await do_rezero(parseInt(this.lrn))
+          this.payload = await do_rezero(data.server, parseInt(this.lrn))
           break
         case 2:
-          this.payload = await check_scanner(this.crs, this.scn_number)
+          this.payload = await check_scanner(data.server, this.crs, this.scn_number)
           break
         case 3:
-          this.payload = await setup_stream({
+          this.payload = await setup_stream(data.server, {
             crs: this.crs,
             num_channels: this.num_channels,
             scn_address: this.scn_address,
