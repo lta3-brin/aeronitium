@@ -21,6 +21,32 @@
             </a>.
           </p>
         </q-card-section>
+
+        <q-card-section class="row justify-around">
+          <q-input
+            v-model="server"
+            class="col-12 col-lg-5"
+            filled
+            dark
+            type="text"
+            label="Server"
+            ref="scn_address"
+            no-error-icon
+            :rules="[val => !!val || 'Diperlukan']"
+          />
+
+          <q-input
+            v-model="websocket"
+            class="col-12 col-lg-5"
+            filled
+            dark
+            type="text"
+            label="Websocket"
+            ref="scn_address"
+            no-error-icon
+            :rules="[val => !!val || 'Diperlukan']"
+          />
+        </q-card-section>
       </q-card>
     </div>
   </q-page>

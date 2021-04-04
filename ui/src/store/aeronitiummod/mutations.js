@@ -1,3 +1,11 @@
+export function addressServerMutation (state, server) {
+  state.address.server = server
+}
+
+export function addressWebsocketMutation (state, websocket) {
+  state.address.websocket = websocket
+}
+
 export function dtcMutation (state, payload) {
   state.dtc.stbl = payload.stbl
 }
