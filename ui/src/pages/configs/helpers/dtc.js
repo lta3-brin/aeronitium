@@ -1,7 +1,7 @@
 import axios from "axios"
 
-export const do_rezero = async (lrn) => {
-  const URL = `${process.env.UI_ADDRESS}/rezero`
+export const do_rezero = async (addr, lrn) => {
+  const URL = `http://${addr}/rezero`
 
   try {
     const res = await axios.post(URL, { lrn })
@@ -16,8 +16,8 @@ export const do_rezero = async (lrn) => {
   }
 }
 
-export const check_scanner = async (crs, scanner_number) => {
-  const URL = `${process.env.UI_ADDRESS}/scannerstatus`
+export const check_scanner = async (addr, crs, scanner_number) => {
+  const URL = `http://${addr}/scannerstatus`
 
   try {
     const res = await axios.post(URL, { crs, scanner_number })
@@ -32,8 +32,8 @@ export const check_scanner = async (crs, scanner_number) => {
   }
 }
 
-export const setup_stream = async (payload) => {
-  const URL = `${process.env.UI_ADDRESS}/simplesetup`
+export const setup_stream = async (addr, payload) => {
+  const URL = `http://${addr}/simplesetup`
 
   try {
     const res = await axios.post(URL, {
